@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>altF4 - Under Construction</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        :root {
+            --bg:#000; --fg:#fff; --gray:#666;
+            --light-gray:#999; --border:#1a1a1a;
+        }
+        ::selection { background:var(--fg); color:var(--bg); }
+
+        body {
+            font-family:'Inter',-apple-system,sans-serif;
+            background:var(--bg); color:var(--fg);
+            line-height:1.7; font-weight:300;
+            -webkit-font-smoothing:antialiased;
+            overflow-x:hidden;
+            min-height:100vh;
+            display:flex;
+            flex-direction:column;
+        }
+
+        /* grid */
+        body::before {
+            content:''; position:fixed; inset:0;
+            background-image:
+                linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+                linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+            background-size:100px 100px;
+            animation:gridMove 20s linear infinite;
+            pointer-events:none; z-index:0;
+        }
+        @keyframes gridMove { to{transform:translate(100px,100px)} }
+
+        /* persistent scanlines */
+        body::after {
+            content:''; position:fixed; inset:0;
+            background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.05) 2px,rgba(0,0,0,.05) 4px);
+            pointer-events:none; z-index:9999;
+        }
+
+        /* ═══ GLITCH ═══ */
+        .glitch-wrap { position:relative; overflow:hidden; }
+
+        .g-copy {
+            position:absolute; inset:0;
+            background:#fff;
+            opacity:0;
+            pointer-events:none;
+            z-index:2;
+            clip-path:inset(0 0 100% 0);
+        }
+
+        .g-strip {
+            position:absolute; inset:0;
+            background:#fff;
+        }
+
+        .glitch-wrap.glitch-on .g-copy {
+            opacity:1;
+            clip-path:none;
+            animation:stripFade .18s steps(2) forwards;
+        }
+        .glitch-wrap.glitch-on .g-strip {
+            animation:stripSlide .13s steps(2) forwards;
+        }
+
+        @keyframes stripSlide {
+            0%   { transform:translateX(var(--tx)); }
+            50%  { transform:translateX(calc(var(--tx) * -0.4)); }
+            100% { transform:translateX(0); }
+        }
+        @keyframes stripFade {
+            0%   { opacity:.75 }
+            60%  { opacity:.35 }
+            100% { opacity:0   }
+        }
+
+        .g-scan {
+            position:absolute;
+            left:0; width:100%;
+            height:3px;
+            background:#fff;
+            opacity:0;
+            pointer-events:none;
+            z-index:3;
+            top:-3px;
+        }
+        .glitch-wrap.glitch-on .g-scan {
+            opacity:1;
+            animation:scanDown .2s linear forwards;
+        }
+        @keyframes scanDown {
+            0%   { top:-3px;  opacity:.6; }
+            70%  { opacity:.4; }
+            100% { top:100%;  opacity:0; }
+        }
+
+        .glitch-wrap.glitch-on {
+            border-color:#fff !important;
+            animation:
+                glitchJitter .15s steps(3) forwards,
+                borderPulse  .22s steps(2) forwards;
+        }
+        @keyframes glitchJitter {
+            0%   { transform:translate(0,0); }
+            25%  { transform:translate(-2px,1px); }
+            50%  { transform:translate(3px,-1px); }
+            75%  { transform:translate(-1px,-2px); }
+            100% { transform:translate(0,0); }
+        }
+        @keyframes borderPulse {
+            0%   { box-shadow:0 0 6px rgba(255,255,255,.5), inset 0 0 4px rgba(255,255,255,.15); }
+            50%  { box-shadow:0 0 2px rgba(255,255,255,.2); }
+            100% { box-shadow:none; border-color:var(--border); }
+        }
+
+        /* ═══ SCROLL INDICATOR ═══ */
+        .scroll-indicator {
+            position:fixed; top:0; left:0; height:2px;
+            background:var(--fg); width:0; z-index:101;
+        }
+
+        /* ═══ LAYOUT ═══ */
+        .container { 
+            max-width:900px; 
+            margin:0 auto; 
+            padding:0 3rem; 
+            position:relative; 
+            z-index:1; 
+        }
+
+        /* ═══ MAIN CONTENT ═══ */
+        main {
+            flex:1;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:4rem 0;
+        }
+
+        .construction-content {
+            text-align:center;
+            animation:fadeInUp 1.2s ease-out;
+            max-width:700px;
+            margin:0 auto;
+        }
+
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+
+        .status-label {
+            font-family:'JetBrains Mono',monospace;
+            font-size:.7rem;
+            color:var(--gray);
+            letter-spacing:.2em;
+            text-transform:uppercase;
+            margin-bottom:3rem;
+            animation:fadeIn 1s ease-out .2s both;
+            opacity:.7;
+        }
+
+        @keyframes fadeIn { from{opacity:0} to{opacity:.7} }
+
+        h1 {
+            font-family:'JetBrains Mono',monospace;
+            font-size:5.5rem;
+            font-weight:400;
+            line-height:1;
+            letter-spacing:.05em;
+            margin-bottom:1.5rem;
+            animation:fadeInUp 1.2s ease-out .3s both;
+            position:relative;
+            display:inline-block;
+        }
+
+        h1::after { 
+            content:'_'; 
+            animation:blink 1s infinite; 
+            margin-left:4px; 
+        }
+        
+        @keyframes blink { 
+            0%,50%{opacity:1} 
+            51%,100%{opacity:0} 
+        }
+
+        .subtitle {
+            font-size:1.4rem;
+            color:var(--gray);
+            line-height:1.6;
+            margin-bottom:6rem;
+            font-weight:300;
+            animation:fadeInUp 1.2s ease-out .5s both;
+        }
+
+        /* ═══ PROGRESS SECTION ═══ */
+        .progress-section {
+            animation:fadeInUp 1.2s ease-out .7s both;
+            max-width:500px;
+            margin:0 auto;
+        }
+
+        .progress-percent {
+            font-family:'JetBrains Mono',monospace;
+            font-size:4rem;
+            font-weight:200;
+            color:var(--fg);
+            letter-spacing:-.03em;
+            margin-bottom:.5rem;
+        }
+
+        .progress-label {
+            font-family:'JetBrains Mono',monospace;
+            font-size:.75rem;
+            color:var(--gray);
+            letter-spacing:.15em;
+            text-transform:uppercase;
+            margin-bottom:3rem;
+            opacity:.6;
+        }
+
+        .progress-bar-container {
+            width:100%;
+            height:1px;
+            background:rgba(255,255,255,.08);
+            position:relative;
+            overflow:hidden;
+            margin-bottom:4rem;
+        }
+
+        .progress-bar-fill {
+            height:100%;
+            background:var(--fg);
+            width:0%;
+            animation:progressLoad 3.5s cubic-bezier(0.4, 0, 0.2, 1) .5s forwards;
+            position:relative;
+            box-shadow:0 0 10px rgba(255,255,255,.3);
+        }
+
+        .progress-bar-fill::before {
+            content:'';
+            position:absolute;
+            right:0;
+            top:50%;
+            transform:translateY(-50%);
+            width:6px;
+            height:6px;
+            background:var(--fg);
+            border-radius:50%;
+            box-shadow:0 0 12px rgba(255,255,255,.6);
+        }
+
+        .progress-bar-fill::after {
+            content:'';
+            position:absolute;
+            top:0; right:0;
+            width:120px; height:100%;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);
+            animation:shimmer 2.5s infinite;
+        }
+
+        @keyframes progressLoad {
+            to { width:67%; }
+        }
+
+        @keyframes shimmer {
+            0% { transform:translateX(-120px); }
+            100% { transform:translateX(400px); }
+        }
+
+        /* ═══ STATUS DOTS ═══ */
+        .status-indicators {
+            display:flex;
+            gap:.8rem;
+            justify-content:center;
+        }
+
+        .status-dot {
+            width:5px;
+            height:5px;
+            border-radius:50%;
+            background:rgba(255,255,255,.15);
+            position:relative;
+            transition:all .3s ease;
+        }
+
+        .status-dot.active {
+            background:var(--fg);
+            animation:pulse 3s ease-in-out infinite;
+        }
+
+        .status-dot.active::after {
+            content:'';
+            position:absolute;
+            inset:-4px;
+            border:1px solid rgba(255,255,255,.2);
+            border-radius:50%;
+            animation:ripple 3s ease-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity:1; transform:scale(1); }
+            50% { opacity:.5; transform:scale(1.2); }
+        }
+
+        @keyframes ripple {
+            0% { transform:scale(1); opacity:.4; }
+            100% { transform:scale(2.5); opacity:0; }
+        }
+
+        /* ═══ FOOTER ═══ */
+        footer {
+            padding:3rem 0;
+            border-top:1px solid var(--border);
+            position:relative;
+            margin-top:auto;
+        }
+
+        footer::before {
+            content:'';
+            position:absolute;
+            top:-1px; left:0;
+            width:0; height:1px;
+            background:var(--fg);
+            animation:footerLine 2s ease-out forwards;
+        }
+        @keyframes footerLine { to{width:100%} }
+
+        footer p {
+            font-family:'JetBrains Mono',monospace;
+            font-size:.7rem;
+            color:var(--gray);
+            text-align:center;
+            letter-spacing:.05em;
+        }
+
+        /* ═══ RESPONSIVE ═══ */
+        @media(max-width:768px) {
+            .container { padding:0 1.5rem; }
+            h1 { font-size:3rem; }
+            .subtitle { font-size:1.1rem; }
+            .progress-percent { font-size:2.5rem; }
+            .status-indicators { gap:.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="scroll-indicator" id="scrollIndicator"></div>
+
+<main>
+  <div class="container">
+    <div class="construction-content">
+      <div class="status-label">Site Status</div>
+      
+      <h1>altF4</h1>
+      
+      <p class="subtitle">Under Construction</p>
+
+      <div class="progress-section">
+        <div class="progress-percent" id="percentText">0%</div>
+        <div class="progress-label">In Progress</div>
+
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill"></div>
+        </div>
+
+        <div class="status-indicators">
+          <div class="status-dot active"></div>
+          <div class="status-dot active"></div>
+          <div class="status-dot active"></div>
+          <div class="status-dot"></div>
+          <div class="status-dot"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <p>© 2026 altF4 — All rights reserved</p>
+  </div>
+</footer>
+
+<script>
+/* ═══ GLITCH ENGINE ═══ */
+const STRIP_COUNT = 5;
+
+function ensureGlitch(el) {
+    if (el.dataset.gReady) return;
+    el.dataset.gReady = '1';
+
+    const copy = document.createElement('div');
+    copy.className = 'g-copy';
+
+    for (let i = 0; i < STRIP_COUNT; i++) {
+        const s = document.createElement('div');
+        s.className = 'g-strip';
+        copy.appendChild(s);
+    }
+    el.appendChild(copy);
+
+    const scan = document.createElement('div');
+    scan.className = 'g-scan';
+    el.appendChild(scan);
+}
+
+function fireGlitch(el) {
+    ensureGlitch(el);
+
+    el.classList.remove('glitch-on');
+    void el.offsetWidth;
+
+    const strips = el.querySelectorAll('.g-strip');
+    let cursor = 0;
+
+    strips.forEach(s => {
+        const gap = 2 + Math.random() * 6;
+        const band = 6 + Math.random() * 16;
+        const top = cursor + gap;
+        const bot = Math.max(0, 100 - top - band);
+        cursor = top + band;
+
+        if (top > 96) {
+            s.style.clipPath = 'inset(0 0 100% 0)';
+            s.style.setProperty('--tx', '0px');
+            return;
+        }
+
+        s.style.clipPath = `inset(${top}% 0 ${bot}% 0)`;
+
+        const tx = (Math.random() - 0.5) * 34;
+        s.style.setProperty('--tx', tx + 'px');
+    });
+
+    el.classList.add('glitch-on');
+
+    setTimeout(() => {
+        el.classList.remove('glitch-on');
+        strips.forEach(s => {
+            s.style.clipPath = 'inset(0 0 100% 0)';
+            s.style.setProperty('--tx', '0px');
+        });
+    }, 240);
+}
+
+const glitchTargets = document.querySelectorAll('.glitch-wrap');
+glitchTargets.forEach(el => el.addEventListener('mouseenter', () => fireGlitch(el)));
+
+/* ═══ PERCENTAGE COUNTER ═══ */
+let percent = 0;
+const targetPercent = 67;
+const percentElement = document.getElementById('percentText');
+
+const counter = setInterval(() => {
+    if (percent < targetPercent) {
+        percent++;
+        percentElement.textContent = percent + '%';
+    } else {
+        clearInterval(counter);
+    }
+}, 50);
+
+/* ═══ SCROLL INDICATOR ═══ */
+window.addEventListener('scroll', () => {
+    const s = document.documentElement.scrollTop;
+    const h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    document.getElementById('scrollIndicator').style.width = (s / h * 100) + '%';
+});
+
+/* ═══ EASTER EGG ═══ */
+console.clear();
+console.log('%c altF4 ', 'background:#000;color:#fff;padding:5px 10px;font-family:monospace');
+console.log('%c Under Construction ', 'background:#fff;color:#000;padding:5px 10px;font-family:monospace');
+console.log('\n$ cat /flags/patience.txt\n');
+console.log('FLAG{m1n1m4l_p3rf3ct10n}\n');
+</script>
+
+</body>
+</html>
