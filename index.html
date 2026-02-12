@@ -458,7 +458,7 @@ glitchTargets.forEach(el => el.addEventListener('mouseenter', () => fireGlitch(e
 
 /* ═══ PERCENTAGE COUNTER ═══ */
 let percent = 0;
-const targetPercent = 67;
+const targetPercent = 10;
 const percentElement = document.getElementById('percentText');
 
 const counter = setInterval(() => {
@@ -476,13 +476,6 @@ window.addEventListener('scroll', () => {
     const h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
     document.getElementById('scrollIndicator').style.width = (s / h * 100) + '%';
 });
-
-/* ═══ EASTER EGG ═══ */
-console.clear();
-console.log('%c altF4 ', 'background:#000;color:#fff;padding:5px 10px;font-family:monospace');
-console.log('%c Under Construction ', 'background:#fff;color:#000;padding:5px 10px;font-family:monospace');
-console.log('\n$ cat /flags/patience.txt\n');
-console.log('FLAG{m1n1m4l_p3rf3ct10n}\n');
 </script>
 
 </body>
